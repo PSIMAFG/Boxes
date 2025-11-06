@@ -4,6 +4,7 @@ version = "1.0.0"
 description = "Sistema de Agenda Clínica con asignación dinámica y analítica ML"
 authors = ["Equipo Desarrollo <dev@clinica.cl>"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -15,6 +16,7 @@ pydantic = "^2.5.3"
 pydantic-settings = "^2.1.0"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+bcrypt = ">=4.1.2,<5.0.0"
 python-multipart = "^0.0.6"
 psycopg2-binary = "^2.9.9"
 scikit-learn = "^1.4.0"
