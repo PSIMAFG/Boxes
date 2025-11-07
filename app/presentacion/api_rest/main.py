@@ -54,6 +54,7 @@ from app.presentacion.api_rest.routers import (
     prestaciones_router,
     citas_router,
     alertas_router,
+    box_estadisticas_router,
 )
 
 app.include_router(auth_router.router, prefix=f"{settings.API_PREFIX}/auth", tags=["auth"])
@@ -63,6 +64,7 @@ app.include_router(boxes_router.router, prefix=f"{settings.API_PREFIX}/boxes", t
 app.include_router(prestaciones_router.router, prefix=f"{settings.API_PREFIX}/prestaciones", tags=["prestaciones"])
 app.include_router(citas_router.router, prefix=f"{settings.API_PREFIX}/citas", tags=["citas"])
 app.include_router(alertas_router.router, prefix=f"{settings.API_PREFIX}/alertas", tags=["alertas"])
+app.include_router(box_estadisticas_router.router, prefix=f"{settings.API_PREFIX}/boxes/estadisticas", tags=["estadísticas de boxes"])
 
 
 @app.on_event("startup")

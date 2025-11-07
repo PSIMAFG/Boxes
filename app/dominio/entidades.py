@@ -65,10 +65,21 @@ class Profesional:
 
 @dataclass
 class Box:
-    """Sala o consultorio físico"""
+    """
+    Sala o consultorio físico.
+
+    Invariantes:
+    - Nombre mínimo 2 caracteres
+    - Piso debe ser 1 o 2
+    - Capacidad debe ser positiva
+    """
     id: UUID = field(default_factory=uuid4)
     nombre: str = ""
     ubicacion: str = ""
+    piso: Optional[int] = None  # Piso 1 o 2
+    capacidad: int = 1  # Número de personas que puede atender simultáneamente
+    equipamiento: Optional[str] = None  # Equipamiento disponible (JSON string)
+    caracteristicas: Optional[str] = None  # Características especiales (JSON string)
     activo: bool = True
     creado_en: datetime = field(default_factory=datetime.utcnow)
     actualizado_en: datetime = field(default_factory=datetime.utcnow)
@@ -76,6 +87,14 @@ class Box:
     def __post_init__(self):
         if not self.nombre or len(self.nombre.strip()) < 2:
             raise ValueError("Nombre de box debe tener al menos 2 caracteres")
+        if self.piso is not None and self.piso not in [1, 2]:
+            raise ValueError("Piso debe ser 1 o 2")
+        if self.capacidad < 1:
+            raise ValueError("Capacidad debe ser al menos 1")
+
+    def esta_en_piso(self, piso: int) -> bool:
+        """Verifica si el box está en el piso especificado"""
+        return self.piso == piso
 
 
 @dataclass

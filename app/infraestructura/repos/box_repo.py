@@ -20,6 +20,10 @@ class BoxRepo:
             id=model.id,
             nombre=model.nombre,
             ubicacion=model.ubicacion,
+            piso=model.piso,
+            capacidad=model.capacidad,
+            equipamiento=model.equipamiento,
+            caracteristicas=model.caracteristicas,
             activo=model.activo,
             creado_en=model.creado_en,
             actualizado_en=model.actualizado_en
@@ -31,6 +35,10 @@ class BoxRepo:
             id=entity.id,
             nombre=entity.nombre,
             ubicacion=entity.ubicacion,
+            piso=entity.piso,
+            capacidad=entity.capacidad,
+            equipamiento=entity.equipamiento,
+            caracteristicas=entity.caracteristicas,
             activo=entity.activo,
             creado_en=entity.creado_en,
             actualizado_en=entity.actualizado_en
@@ -57,6 +65,10 @@ class BoxRepo:
 
         model.nombre = box.nombre
         model.ubicacion = box.ubicacion
+        model.piso = box.piso
+        model.capacidad = box.capacidad
+        model.equipamiento = box.equipamiento
+        model.caracteristicas = box.caracteristicas
         model.activo = box.activo
 
         self.db.commit()
@@ -79,3 +91,15 @@ class BoxRepo:
         if model:
             model.activo = False
             self.db.commit()
+
+    def obtener_por_id(self, id: UUID) -> Optional[Box]:
+        """Alias para mantener compatibilidad"""
+        return self.obtener(id)
+
+    def listar_activos(self) -> List[Box]:
+        """Lista solo boxes activos"""
+        return self.listar(activo=True)
+
+    def listar_todos(self) -> List[Box]:
+        """Lista todos los boxes"""
+        return self.listar(activo=None)
