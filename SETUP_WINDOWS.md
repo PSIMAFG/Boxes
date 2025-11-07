@@ -2,6 +2,52 @@
 
 Esta guía te ayudará a configurar y ejecutar el Sistema de Agenda Clínica en Windows.
 
+## 🚀 Método Rápido: Instalación Automática (RECOMENDADO)
+
+Hemos creado un **script de inicialización automática** que verifica y configura todo por ti, mostrando el progreso en una interfaz gráfica.
+
+### ¿Qué hace el script automático?
+
+- ✅ Verifica que Python esté instalado correctamente
+- ✅ Verifica que Poetry esté instalado
+- ✅ Crea el entorno virtual si no existe
+- ✅ Instala todas las dependencias necesarias (incluyendo `email-validator` y otras librerías)
+- ✅ Ejecuta las migraciones de base de datos
+- ✅ Inicializa los datos de prueba
+- ✅ Muestra todo en una ventana con información clara
+
+### Cómo usar el script automático
+
+1. **Asegúrate de tener Python 3.11+ y Poetry instalados** (ver [Requisitos Previos](#requisitos-previos) abajo)
+
+2. **Ejecuta el script de inicialización:**
+
+```powershell
+# Navega al directorio del proyecto
+cd C:\Users\TU_USUARIO\Desktop\Gestion_Box\Boxes
+
+# Ejecuta el script de configuración
+python setup.py
+```
+
+3. **Haz clic en "Iniciar Configuración"** en la ventana que aparece
+
+4. **Espera a que termine** (puede tardar varios minutos instalando dependencias)
+
+5. **¡Listo!** Una vez completado, puedes iniciar el servidor:
+
+```powershell
+poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### Si el script automático falla
+
+Si el script automático no funciona o prefieres hacer la instalación manual, sigue la **Guía de Instalación Manual** a continuación.
+
+---
+
+## 📋 Guía de Instalación Manual
+
 ## Requisitos Previos
 
 - **Python 3.11 o superior** instalado (verificar con `py -0p` en PowerShell)
