@@ -84,15 +84,25 @@ class ProfesionalModel(Base):
 
 
 class BoxModel(Base):
-    """Sala o consultorio físico"""
+    """Sala o consultorio físico con características modificables"""
     __tablename__ = "boxes"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     nombre = Column(String(100), nullable=False)
     ubicacion = Column(String(255), nullable=False)
+    piso = Column(Integer, nullable=False, default=1)
+    capacidad = Column(Integer, nullable=False, default=1)
+    equipamiento = Column(Text, nullable=True)
+    metros_cuadrados = Column(Integer, nullable=True)
     activo = Column(Boolean, default=True, nullable=False)
     creado_en = Column(DateTime, default=datetime.utcnow, nullable=False)
     actualizado_en = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    # Constraints
+    __table_args__ = (
+        CheckConstraint('piso IN (1, 2)', name='check_piso'),
+        CheckConstraint('capacidad >= 1', name='check_capacidad'),
+    )
 
 
 class PrestacionModel(Base):
@@ -242,3 +252,21 @@ class AuditoriaEventoModel(Base):
 
     # Relationships
     usuario = relationship("UsuarioSistemaModel")
+
+
+class HistorialBoxModel(Base):
+    """Registro histórico de cambios en características de boxes"""
+    __tablename__ = "historial_boxes"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    box_id = Column(UUID(as_uuid=True), ForeignKey("boxes.id"), nullable=False, index=True)
+    campo_modificado = Column(String(50), nullable=False)
+    valor_anterior = Column(Text, nullable=True)
+    valor_nuevo = Column(Text, nullable=False)
+    motivo = Column(Text, nullable=True)
+    modificado_por = Column(UUID(as_uuid=True), ForeignKey("usuarios_sistema.id"), nullable=False)
+    timestamp = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+
+    # Relationships
+    box = relationship("BoxModel")
+    modificador = relationship("UsuarioSistemaModel")

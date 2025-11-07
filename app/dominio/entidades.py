@@ -65,10 +65,18 @@ class Profesional:
 
 @dataclass
 class Box:
-    """Sala o consultorio físico"""
+    """
+    Sala o consultorio físico.
+
+    Características modificables en el tiempo para análisis de uso.
+    """
     id: UUID = field(default_factory=uuid4)
     nombre: str = ""
     ubicacion: str = ""
+    piso: Literal[1, 2] = 1
+    capacidad: int = 1  # Número de personas que puede atender simultáneamente
+    equipamiento: str = ""  # Descripción de equipamiento disponible
+    metros_cuadrados: Optional[float] = None
     activo: bool = True
     creado_en: datetime = field(default_factory=datetime.utcnow)
     actualizado_en: datetime = field(default_factory=datetime.utcnow)
@@ -76,6 +84,10 @@ class Box:
     def __post_init__(self):
         if not self.nombre or len(self.nombre.strip()) < 2:
             raise ValueError("Nombre de box debe tener al menos 2 caracteres")
+        if self.piso not in [1, 2]:
+            raise ValueError("Piso debe ser 1 o 2")
+        if self.capacidad < 1:
+            raise ValueError("Capacidad debe ser al menos 1")
 
 
 @dataclass
@@ -276,3 +288,21 @@ class AuditoriaEvento:
     detalles: Optional[dict] = None
     timestamp: datetime = field(default_factory=datetime.utcnow)
     ip_origen: Optional[str] = None
+
+
+@dataclass
+class HistorialBox:
+    """
+    Registro histórico de cambios en características de boxes.
+
+    Permite rastrear cambios en piso, capacidad, equipamiento, etc.
+    a lo largo del tiempo para análisis y auditoría.
+    """
+    id: UUID = field(default_factory=uuid4)
+    box_id: UUID = field(default_factory=uuid4)
+    campo_modificado: str = ""  # Ej: "piso", "capacidad", "equipamiento"
+    valor_anterior: Optional[str] = None
+    valor_nuevo: str = ""
+    motivo: Optional[str] = None
+    modificado_por: UUID = field(default_factory=uuid4)
+    timestamp: datetime = field(default_factory=datetime.utcnow)
