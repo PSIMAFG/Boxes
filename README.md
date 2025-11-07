@@ -21,37 +21,77 @@ Sistema end-to-end de gestión de agenda clínica que implementa arquitectura li
 
 ---
 
-## Instalación Rápida
+## 🚀 Inicio Rápido
 
-```bash
-git clone https://github.com/clinica/agenda-clinica.git
-cd agenda-clinica
+### Windows (Recomendado)
 
-poetry install
+**Para ejecutar Backend + Frontend juntos:**
+```batch
+# 1. Instalar dependencias del backend
+install_deps.bat
 
-cp .env.example .env
+# 2. Configurar base de datos
+setup_db.bat
 
-alembic upgrade head
-
-python -m app.scripts.seed_data
-
-uvicorn app.presentacion.api_rest.main:app --reload
+# 3. Ejecutar Backend + Frontend
+run_all.bat
 ```
 
-La API estará disponible en `http://localhost:8000`
+**Solo Backend:**
+```batch
+run_server.bat
+```
 
-Documentación interactiva: `http://localhost:8000/docs`
+**Solo Frontend:**
+```batch
+cd frontend_pyqt
+run_frontend.bat
+```
+
+📖 **Guía completa:** Ver `INICIO_RAPIDO_WINDOWS.md`
+
+### Linux/macOS
+
+```bash
+# 1. Instalar dependencias
+poetry install
+
+# 2. Configurar entorno
+cp .env.example .env
+
+# 3. Configurar base de datos
+alembic upgrade head
+python -m app.scripts.seed_data
+
+# 4. Ejecutar backend
+poetry run uvicorn app.main:app --reload
+```
+
+### Acceso
+
+- **API REST:** http://localhost:8000
+- **Documentación:** http://localhost:8000/docs
+- **Frontend PyQt6:** Ejecutar `python frontend_pyqt/main.py`
+
+### Credenciales de Prueba
+
+```
+Admin: admin@clinica.cl / admin123
+Recepción: recepcion@clinica.cl / recepcion123
+Profesional: juan.perez@clinica.cl / prof123
+```
 
 ---
 
 ## Estructura del Proyecto
 
 ```
-agenda-clinica/
-├── app/
-│   ├── presentacion/          # UI PyQt6 y API REST FastAPI
-│   │   ├── ui_escritorio/     # Aplicación desktop
-│   │   └── api_rest/          # Endpoints JSON
+Boxes/
+├── app/                       # 🔧 Backend FastAPI
+│   ├── presentacion/
+│   │   └── api_rest/          # Endpoints REST
+│   │       ├── main.py        # App FastAPI principal
+│   │       └── routers/       # Routers por módulo
 │   ├── aplicacion/            # Casos de uso y servicios
 │   │   ├── servicios/         # AgendaService, AuthService, etc.
 │   │   └── dtos/              # Request/Response DTOs
@@ -66,18 +106,33 @@ agenda-clinica/
 │   │   ├── seguridad/         # JWT, RBAC, hashing
 │   │   └── logging/           # Logs estructurados
 │   ├── analitica_ml/          # Pipeline ML
-│   │   ├── features.py        # Feature engineering
-│   │   ├── entrenamiento.py   # Training pipelines
-│   │   ├── prediccion.py      # Scoring functions
-│   │   └── almacenamiento_modelos.py
 │   ├── config/                # Settings Pydantic
-│   └── tests/                 # Tests unitarios e integración
+│   ├── scripts/               # Scripts de BD (seed, etc.)
+│   └── main.py                # Shortcut para ejecutar app
+├── frontend_pyqt/             # 🖥️ Frontend PyQt6
+│   ├── controllers/           # Lógica de negocio
+│   │   ├── api_client.py      # Cliente HTTP
+│   │   ├── user_state.py      # Gestión de sesión
+│   │   └── role_guard.py      # Control RBAC
+│   ├── ui/                    # Ventanas y widgets
+│   │   ├── login_window.py    # Pantalla de login
+│   │   ├── dashboard_window.py # Dashboard principal
+│   │   └── ...                # Ventanas CRUD
+│   ├── resources/             # Constantes y configuración
+│   ├── scripts/               # Scripts de setup
+│   ├── main.py                # Aplicación PyQt6
+│   ├── requirements.txt       # Dependencias Python
+│   └── run_frontend.bat       # Script de ejecución
 ├── alembic/                   # Migraciones de BD
-├── docs/                      # Documentación adicional
+├── INICIO_RAPIDO_WINDOWS.md   # 📖 Guía de instalación Windows
+├── SETUP_WINDOWS.md           # Instalación detallada
+├── install_deps.bat           # Instalar dependencias backend
+├── setup_db.bat               # Configurar base de datos
+├── run_server.bat             # Ejecutar backend
+├── run_all.bat                # Ejecutar backend + frontend
 ├── pyproject.toml             # Poetry dependencies
 ├── Dockerfile
-├── docker-compose.yml
-└── Makefile
+└── docker-compose.yml
 ```
 
 ---

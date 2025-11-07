@@ -64,14 +64,22 @@ Si ya tienes un usuario aprobado en el backend:
 3. Clic en "Registrarse"
 4. **Importante:** El usuario debe ser aprobado por un administrador
 
-### Opción C: Crear administrador (requiere backend)
+### Opción C: Usar usuarios de prueba
 
-```bash
-# En el directorio del backend
-cd ../backend
+Si ejecutaste el script `setup_db.bat` en la raíz del proyecto, ya tienes usuarios creados:
 
-# Crear usuario admin directamente en BD
-# (consultar documentación del backend)
+```
+Admin:
+  Email: admin@clinica.cl
+  Password: admin123
+
+Recepción:
+  Email: recepcion@clinica.cl
+  Password: recepcion123
+
+Profesional:
+  Email: juan.perez@clinica.cl
+  Password: prof123
 ```
 
 ---
@@ -135,8 +143,11 @@ python main.py
 **Solución:**
 ```bash
 # Verificar que el backend esté corriendo
-cd ../backend
-uvicorn main:app --reload
+# Desde el directorio raíz del proyecto (Boxes/)
+run_server.bat
+
+# O manualmente:
+poetry run uvicorn app.main:app --reload
 ```
 
 ### ❌ "Usuario no aprobado"

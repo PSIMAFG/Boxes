@@ -3,7 +3,8 @@ Role Guard - Control de acceso basado en roles (RBAC)
 Habilita/deshabilita elementos de UI según el rol del usuario
 """
 from typing import List, Optional
-from PyQt6.QtWidgets import QWidget, QPushButton, QAction, QMenu
+from PyQt6.QtWidgets import QWidget, QPushButton, QMenu
+from PyQt6.QtGui import QAction
 from controllers.user_state import UserState
 from resources.constants import Roles
 

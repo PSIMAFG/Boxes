@@ -2,6 +2,37 @@
 
 Frontend de escritorio desarrollado en Python con PyQt6 para el Sistema de Gestión de Agenda Clínica.
 
+## ⚡ Inicio Rápido (Windows)
+
+### Ejecutar Frontend con el Backend
+
+**Opción 1: Todo junto (Recomendado)**
+```batch
+# Desde la raíz del proyecto (Boxes/)
+run_all.bat
+```
+
+**Opción 2: Solo el frontend**
+```batch
+# Asegúrate de que el backend esté corriendo primero
+cd frontend_pyqt
+run_frontend.bat
+```
+
+> **Nota:** El backend debe estar corriendo en `http://localhost:8000` (ejecuta `run_server.bat` en la raíz del proyecto)
+
+### Credenciales de Prueba
+
+```
+Admin: admin@clinica.cl / admin123
+Recepción: recepcion@clinica.cl / recepcion123
+Profesional: juan.perez@clinica.cl / prof123
+```
+
+Para más detalles, consulta `INICIO_RAPIDO_WINDOWS.md` en la raíz del proyecto.
+
+---
+
 ## 📋 Características
 
 - ✅ **Autenticación JWT** con refresh token automático
