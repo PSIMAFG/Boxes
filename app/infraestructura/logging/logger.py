@@ -75,6 +75,10 @@ def setup_logging():
         file_handler.setFormatter(formatter)
         root_logger.addHandler(file_handler)
 
+    # Silenciar warnings específicos conocidos
+    # Passlib/bcrypt version warning (conocido y no afecta funcionalidad)
+    logging.getLogger('passlib').setLevel(logging.ERROR)
+
     return root_logger
 
 

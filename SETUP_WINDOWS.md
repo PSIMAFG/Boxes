@@ -1,48 +1,49 @@
-# Guía de Instalación en Windows
+# Guía de Instalación en Windows 11
 
-Esta guía te ayudará a configurar y ejecutar el Sistema de Agenda Clínica en Windows.
+Esta guía te ayudará a configurar y ejecutar el Sistema de Agenda Clínica en Windows 11 con **Python 3.12**, **Poetry 2.2.1+**, y dependencias optimizadas (passlib 1.7.4 + bcrypt 4.1.2).
 
-## 🚀 Método Rápido: Instalación Automática (RECOMENDADO)
+## 🚀 Método Rápido: Scripts Batch (RECOMENDADO)
 
 Hemos creado un **script de inicialización automática** que verifica y configura todo por ti, mostrando el progreso en una interfaz gráfica.
 
-### ¿Qué hace el script automático?
+### Scripts Disponibles
 
-- ✅ Verifica que Python esté instalado correctamente
-- ✅ Verifica que Poetry esté instalado
-- ✅ Crea el entorno virtual si no existe
-- ✅ Instala todas las dependencias necesarias (incluyendo `email-validator` y otras librerías)
-- ✅ Ejecuta las migraciones de base de datos
-- ✅ Inicializa los datos de prueba
-- ✅ Muestra todo en una ventana con información clara
+Se han creado **scripts batch** optimizados que evitan conflictos con Anaconda y otras instalaciones de Python:
 
-### Cómo usar el script automático
+1. **`install_deps.bat`** - Instala/actualiza dependencias con Poetry
+2. **`setup_db.bat`** - Configura la base de datos (migraciones + seed)
+3. **`run_server.bat`** - Inicia el servidor FastAPI con configuración optimizada
 
-1. **Asegúrate de tener Python 3.11+ y Poetry instalados** (ver [Requisitos Previos](#requisitos-previos) abajo)
+### Instalación en 3 pasos
 
-2. **Ejecuta el script de inicialización:**
-
-```powershell
-# Navega al directorio del proyecto
-cd C:\Users\TU_USUARIO\Desktop\Gestion_Box\Boxes
-
-# Ejecuta el script de configuración
-python setup.py
+**Paso 1: Instalar dependencias**
+```batch
+install_deps.bat
 ```
 
-3. **Haz clic en "Iniciar Configuración"** en la ventana que aparece
-
-4. **Espera a que termine** (puede tardar varios minutos instalando dependencias)
-
-5. **¡Listo!** Una vez completado, puedes iniciar el servidor:
-
-```powershell
-poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+**Paso 2: Configurar base de datos**
+```batch
+setup_db.bat
 ```
 
-### Si el script automático falla
+**Paso 3: Iniciar servidor**
+```batch
+run_server.bat
+```
 
-Si el script automático no funciona o prefieres hacer la instalación manual, sigue la **Guía de Instalación Manual** a continuación.
+O accede a http://localhost:8000/docs
+
+### ¿Qué resuelven estos scripts?
+
+- ✅ **Limpian PYTHONPATH** para evitar conflictos con Anaconda
+- ✅ **Fuerzan el uso del venv de Poetry** (`.venv`)
+- ✅ **Configuran `--reload-dir ./app`** para recargas correctas
+- ✅ **Silencian warnings de passlib/bcrypt** en el logging
+- ✅ **Seed idempotente** (no falla si los datos ya existen)
+
+### Si prefieres instalación manual
+
+Si prefieres hacerlo manualmente o los scripts no funcionan, sigue la **Guía de Instalación Manual** a continuación.
 
 ---
 
@@ -50,9 +51,14 @@ Si el script automático no funciona o prefieres hacer la instalación manual, s
 
 ## Requisitos Previos
 
-- **Python 3.11 o superior** instalado (verificar con `py -0p` en PowerShell)
-- **PowerShell** (incluido en Windows)
+- **Python 3.12.3 o superior** instalado (verificar con `py -0p` en PowerShell)
+- **Poetry 2.2.1 o superior** (gestor de dependencias)
+- **PowerShell** o **CMD** (incluido en Windows)
 - **Git** para Windows (opcional, para clonar el repositorio)
+
+### Nota importante sobre Anaconda
+
+Si tienes **Anaconda** instalado, los scripts batch incluidos limpian automáticamente el `PYTHONPATH` para evitar conflictos. Asegúrate de usar los scripts `.bat` o sigue las instrucciones de la sección "Evitar conflictos con Anaconda" más abajo.
 
 ## Paso 1: Instalar Poetry
 
@@ -87,24 +93,45 @@ poetry --version
 Navega al directorio del proyecto y configura Poetry para crear el entorno virtual dentro del proyecto:
 
 ```powershell
-cd C:\Users\TU_USUARIO\Desktop\Gestion_Box\Boxes
+cd C:\Users\matia\Desktop\Gestion_Box\Boxes
 
 # Configurar Poetry para crear venv en el proyecto
 poetry config virtualenvs.in-project true
 poetry config virtualenvs.create true
 
-# Usar Python 3.11 o superior
-poetry env use python3.11
+# Usar Python 3.12
+poetry env use python3.12
 ```
 
-Si tienes múltiples versiones de Python, especifica la ruta completa:
+Si tienes múltiples versiones de Python (o Anaconda), especifica la ruta completa:
 
 ```powershell
-# Primero, encuentra la ruta de Python 3.11+
-py -3.11 -c "import sys; print(sys.executable)"
+# Primero, encuentra la ruta de Python 3.12
+py -3.12 -c "import sys; print(sys.executable)"
 
 # Luego usa esa ruta (reemplaza con la ruta que imprimió el comando anterior)
 poetry env use "RUTA_DE_PYTHON"
+
+# Ejemplo en Windows:
+# poetry env use "C:\Users\matia\AppData\Local\Programs\Python\Python312\python.exe"
+```
+
+### Evitar conflictos con Anaconda
+
+Si tienes Anaconda instalado y Poetry intenta usar el intérprete de Anaconda:
+
+```powershell
+# Limpiar PYTHONPATH temporalmente
+$env:PYTHONPATH = ""
+
+# Verificar que .venv usa el Python correcto
+.\.venv\Scripts\python.exe --version
+# Debe mostrar: Python 3.12.x
+
+# Si no es correcto, elimina .venv y recréalo
+Remove-Item -Recurse -Force .venv
+poetry env use python3.12
+poetry install --no-root
 ```
 
 ## Paso 3: Instalar Dependencias
@@ -154,12 +181,18 @@ poetry run python -m app.scripts.seed_data
 ## Paso 6: Ejecutar el Servidor
 
 ```powershell
+# IMPORTANTE: Limpiar PYTHONPATH antes de iniciar (para evitar conflictos con Anaconda)
+$env:PYTHONPATH = ""
+
 # Desarrollo (con recarga automática)
-poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+# El flag --reload-dir asegura que solo se monitorea la carpeta app/
+poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir ./app
 
 # Producción (sin recarga)
 poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
 ```
+
+**Recomendación:** Usa el script `run_server.bat` que ya incluye estas configuraciones optimizadas.
 
 El servidor estará disponible en:
 - API: http://localhost:8000
@@ -178,10 +211,10 @@ $env:Path += ";$env:APPDATA\Python\Scripts"
 
 ### Error: "The currently activated Python version is not supported"
 
-**Solución:** El proyecto requiere Python 3.11+. Instala Python 3.11 o superior y configura Poetry para usarlo:
+**Solución:** El proyecto requiere Python 3.12+. Instala Python 3.12 o superior y configura Poetry para usarlo:
 
 ```powershell
-poetry env use python3.11
+poetry env use python3.12
 ```
 
 ### Error: "pyproject.toml changed significantly since poetry.lock was last generated"
@@ -210,11 +243,16 @@ ENABLE_ML_SCORING=false
 Set-Content -Path .env -Value $envText -Encoding Ascii
 ```
 
-### Error: "bcrypt version" o "password cannot be longer than 72 bytes"
+### Error: "error reading bcrypt version" (warning de passlib)
 
-**Problema:** Incompatibilidad entre `passlib` y `bcrypt 5.x`.
+**Problema:** Warning conocido entre `passlib 1.7.4` y `bcrypt 4.1.2` al verificar versión.
 
-**Solución:** Ya está resuelto en el `pyproject.toml`. Si persiste:
+**Solución:**
+- El warning NO afecta la funcionalidad (los hashes funcionan correctamente)
+- Ya está silenciado en `app/infraestructura/logging/logger.py`
+- Si aún aparece, es solo informativo y puedes ignorarlo
+
+Si quieres asegurar las versiones correctas:
 
 ```powershell
 poetry lock
@@ -284,11 +322,11 @@ poetry run mypy app/
 
 Después de ejecutar `seed_data`, tendrás estos usuarios disponibles:
 
-| Usuario | Contraseña | Rol |
-|---------|-----------|-----|
-| admin | admin123 | Administrador |
-| doctor1 | doctor123 | Doctor |
-| recep1 | recep123 | Recepcionista |
+| Email | Contraseña | Rol |
+|-------|-----------|-----|
+| admin@clinica.cl | admin123 | Administrador |
+| recepcion@clinica.cl | recepcion123 | Recepción |
+| juan.perez@clinica.cl | prof123 | Profesional (Kinesiólogo) |
 
 ## Estructura del Proyecto
 
@@ -309,6 +347,55 @@ Boxes/
 └── README.md             # Documentación principal
 ```
 
+### Error: Uvicorn intenta usar rutas de Anaconda (anaconda3) al hacer reload
+
+**Problema:** Al usar `--reload`, Uvicorn intenta monitorear rutas de `anaconda3` aunque el proyecto usa Poetry.
+
+**Síntomas:**
+```
+WatchFilesReload detected changes in 'C:\\Users\\..\\anaconda3\\...'
+```
+
+**Solución:**
+
+1. **Usar el script `run_server.bat`** (recomendado) - ya limpia el PYTHONPATH automáticamente
+
+2. **O manualmente antes de cada ejecución:**
+```powershell
+# Limpiar PYTHONPATH
+$env:PYTHONPATH = ""
+
+# Verificar que usas el Python correcto
+poetry run python -c "import sys; print(sys.executable)"
+# Debe mostrar: ...\Boxes\.venv\Scripts\python.exe
+
+# Iniciar con --reload-dir para limitar el monitoreo
+poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-dir ./app
+```
+
+3. **Solución permanente:** Crear un perfil de PowerShell que limpie PYTHONPATH:
+```powershell
+# Editar perfil de PowerShell
+notepad $PROFILE
+
+# Agregar al final:
+$env:PYTHONPATH = ""
+```
+
+## 🔧 Checklist de Verificación Final
+
+Antes de reportar un problema, verifica que:
+
+- [ ] Python 3.12.3+ está instalado (`python --version`)
+- [ ] Poetry 2.2.1+ está instalado (`poetry --version`)
+- [ ] El venv está en `.venv` dentro del proyecto (`poetry env info`)
+- [ ] Las dependencias están instaladas (`poetry install --no-root`)
+- [ ] El archivo `.env` existe y está correctamente formateado
+- [ ] Las migraciones se ejecutaron (`poetry run alembic upgrade head`)
+- [ ] Los datos de seed se cargaron (`poetry run python -m app.scripts.seed_data`)
+- [ ] `PYTHONPATH` está limpio si usas Anaconda
+- [ ] Usas `--reload-dir ./app` con uvicorn
+
 ## Próximos Pasos
 
 1. Explora la documentación de la API en http://localhost:8000/docs
@@ -320,7 +407,8 @@ Boxes/
 
 Si encuentras problemas adicionales:
 
-1. Verifica que todos los pasos anteriores se completaron correctamente
+1. Verifica que todos los pasos del checklist anterior están completos
 2. Revisa los logs de error para más detalles
-3. Asegúrate de tener la versión correcta de Python (3.11+)
+3. Asegúrate de tener la versión correcta de Python (3.12.3+)
 4. Verifica que el archivo `.env` está en formato correcto (ASCII o UTF-8 sin BOM)
+5. Si usas Anaconda, asegúrate de limpiar `PYTHONPATH` antes de ejecutar comandos
