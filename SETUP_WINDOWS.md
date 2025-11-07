@@ -97,11 +97,43 @@ Y luego editarlo con tu editor preferido (asegúrate de guardar con codificació
 
 ## Paso 5: Inicializar la Base de Datos
 
+### Primera Instalación (Base de Datos Limpia)
+
 ```powershell
 # Ejecutar migraciones de Alembic
 poetry run alembic upgrade head
 
 # Cargar datos iniciales (usuarios de prueba, etc.)
+poetry run python -m app.scripts.seed_data
+```
+
+### Si Ya Existe una Base de Datos (Reinstalación)
+
+Si recibes un error como `table usuarios already exists`, necesitas limpiar la base de datos:
+
+**Opción 1: Eliminar la base de datos y empezar de nuevo (Recomendado para desarrollo)**
+
+```powershell
+# Eliminar archivo de base de datos SQLite
+Remove-Item .\agenda_clinica.db -Force -ErrorAction SilentlyContinue
+
+# Ejecutar migraciones desde cero
+poetry run alembic upgrade head
+
+# Cargar datos iniciales
+poetry run python -m app.scripts.seed_data
+```
+
+**Opción 2: Revertir migraciones y reaplicarlas**
+
+```powershell
+# Revertir todas las migraciones
+poetry run alembic downgrade base
+
+# Aplicar migraciones nuevamente
+poetry run alembic upgrade head
+
+# Cargar datos iniciales
 poetry run python -m app.scripts.seed_data
 ```
 
@@ -179,11 +211,42 @@ poetry install --no-root
 
 **Problema:** Poetry intenta instalar el proyecto como paquete.
 
-**Solución:** Usa siempre `--no-root`:
+**Solución:** Ya está resuelto con `package-mode = false` en `pyproject.toml`. Si persiste, usa `--no-root`:
 
 ```powershell
 poetry install --no-root
 ```
+
+### Error: "table usuarios already exists" al ejecutar alembic
+
+**Problema:** La base de datos ya tiene tablas de un intento previo de instalación.
+
+**Solución:** Elimina la base de datos y vuelve a crearla:
+
+```powershell
+Remove-Item .\agenda_clinica.db -Force -ErrorAction SilentlyContinue
+poetry run alembic upgrade head
+poetry run python -m app.scripts.seed_data
+```
+
+### Error: "Could not import module app.main" al ejecutar uvicorn
+
+**Problema:** Ya resuelto. El archivo `app/main.py` faltaba.
+
+**Solución:** Después de hacer pull de los últimos cambios, el archivo `app/main.py` estará presente. Si persiste, verifica que el módulo se puede importar:
+
+```powershell
+poetry run python -c "from app.main import app; print('OK')"
+```
+
+### Error: "ValueError: RUT inválido" al ejecutar seed_data
+
+**Problema:** Ya resuelto. Los RUTs en el script de seed_data estaban mal calculados.
+
+**Solución:** Después de hacer pull de los últimos cambios, los RUTs serán válidos. Los RUTs de prueba son:
+- `12345678-5` (Pedro Sánchez)
+- `16432341-4` (Ana Martínez)
+- `18765432-3` (Carlos López)
 
 ### Limpiar Entornos Virtuales Antiguos
 

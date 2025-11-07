@@ -172,7 +172,7 @@ def seed():
 
         user2 = Usuario(
             id=uuid4(),
-            rut=RUT("98765432-1"),
+            rut=RUT("16432341-4"),
             nombre="Ana Martínez",
             fecha_nacimiento=date(1995, 8, 22),
             nivel_apoyo=2,
@@ -183,7 +183,7 @@ def seed():
 
         user3 = Usuario(
             id=uuid4(),
-            rut=RUT("11111111-1"),
+            rut=RUT("18765432-3"),
             nombre="Carlos López",
             fecha_nacimiento=date(1970, 3, 10),
             nivel_apoyo=3,
