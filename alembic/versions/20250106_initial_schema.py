@@ -18,9 +18,17 @@ depends_on = None
 
 def upgrade() -> None:
     """Create all tables"""
+    from sqlalchemy import inspect
+    from alembic import context
+
+    conn = context.get_bind()
+    inspector = inspect(conn)
+    existing_tables = inspector.get_table_names()
+
     # Usuarios
-    op.create_table(
-        'usuarios',
+    if 'usuarios' not in existing_tables:
+        op.create_table(
+            'usuarios',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column('rut', sa.String(12), unique=True, nullable=False, index=True),
         sa.Column('nombre', sa.String(255), nullable=False),
@@ -29,34 +37,37 @@ def upgrade() -> None:
         sa.Column('activo', sa.Boolean(), default=True, nullable=False),
         sa.Column('creado_en', sa.DateTime(), nullable=False),
         sa.Column('actualizado_en', sa.DateTime(), nullable=False),
-        sa.CheckConstraint('nivel_apoyo IS NULL OR nivel_apoyo BETWEEN 1 AND 3', name='check_nivel_apoyo')
-    )
+            sa.CheckConstraint('nivel_apoyo IS NULL OR nivel_apoyo BETWEEN 1 AND 3', name='check_nivel_apoyo')
+        )
 
     # Profesionales
-    op.create_table(
-        'profesionales',
+    if 'profesionales' not in existing_tables:
+        op.create_table(
+            'profesionales',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column('nombre', sa.String(255), nullable=False),
         sa.Column('profesion', sa.String(100), nullable=False),
         sa.Column('activo', sa.Boolean(), default=True, nullable=False),
         sa.Column('creado_en', sa.DateTime(), nullable=False),
-        sa.Column('actualizado_en', sa.DateTime(), nullable=False)
-    )
+            sa.Column('actualizado_en', sa.DateTime(), nullable=False)
+        )
 
     # Boxes
-    op.create_table(
-        'boxes',
+    if 'boxes' not in existing_tables:
+        op.create_table(
+            'boxes',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column('nombre', sa.String(100), nullable=False),
         sa.Column('ubicacion', sa.String(255), nullable=False),
         sa.Column('activo', sa.Boolean(), default=True, nullable=False),
         sa.Column('creado_en', sa.DateTime(), nullable=False),
-        sa.Column('actualizado_en', sa.DateTime(), nullable=False)
-    )
+            sa.Column('actualizado_en', sa.DateTime(), nullable=False)
+        )
 
     # Prestaciones
-    op.create_table(
-        'prestaciones',
+    if 'prestaciones' not in existing_tables:
+        op.create_table(
+            'prestaciones',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column('nombre', sa.String(200), nullable=False),
         sa.Column('duracion_minutos', sa.Integer(), nullable=False),
@@ -64,12 +75,13 @@ def upgrade() -> None:
         sa.Column('tolerancia_dias', sa.Integer(), nullable=False),
         sa.Column('habilitada', sa.Boolean(), default=True, nullable=False),
         sa.Column('creado_en', sa.DateTime(), nullable=False),
-        sa.Column('actualizado_en', sa.DateTime(), nullable=False)
-    )
+            sa.Column('actualizado_en', sa.DateTime(), nullable=False)
+        )
 
     # Usuarios Sistema
-    op.create_table(
-        'usuarios_sistema',
+    if 'usuarios_sistema' not in existing_tables:
+        op.create_table(
+            'usuarios_sistema',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column('email', sa.String(255), unique=True, nullable=False, index=True),
         sa.Column('password_hash', sa.String(255), nullable=False),
@@ -77,12 +89,13 @@ def upgrade() -> None:
         sa.Column('activo', sa.Boolean(), default=True, nullable=False),
         sa.Column('profesional_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('profesionales.id'), nullable=True),
         sa.Column('creado_en', sa.DateTime(), nullable=False),
-        sa.Column('actualizado_en', sa.DateTime(), nullable=False)
-    )
+            sa.Column('actualizado_en', sa.DateTime(), nullable=False)
+        )
 
     # Citas
-    op.create_table(
-        'citas',
+    if 'citas' not in existing_tables:
+        op.create_table(
+            'citas',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column('usuario_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('usuarios.id'), nullable=False, index=True),
         sa.Column('profesional_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('profesionales.id'), nullable=False, index=True),
@@ -92,24 +105,26 @@ def upgrade() -> None:
         sa.Column('fin', sa.DateTime(), nullable=False),
         sa.Column('estado', sa.Enum('PROGRAMADA', 'CONFIRMADA', 'CUMPLIDA', 'NO_ASISTIO', 'CANCELADA', name='estadocita'), nullable=False, index=True),
         sa.Column('creado_en', sa.DateTime(), nullable=False),
-        sa.Column('actualizado_en', sa.DateTime(), nullable=False)
-    )
+            sa.Column('actualizado_en', sa.DateTime(), nullable=False)
+        )
 
     # Sesiones Registros
-    op.create_table(
-        'sesiones_registros',
+    if 'sesiones_registros' not in existing_tables:
+        op.create_table(
+            'sesiones_registros',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column('cita_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('citas.id'), nullable=False, unique=True),
         sa.Column('cumplida', sa.Boolean(), nullable=False),
         sa.Column('valoracion', sa.Enum('POSITIVO', 'NEUTRO', 'NEGATIVO', name='valoracionsesion'), nullable=True),
         sa.Column('notas', sa.Text(), nullable=True),
         sa.Column('creado_por', postgresql.UUID(as_uuid=True), sa.ForeignKey('usuarios_sistema.id'), nullable=False),
-        sa.Column('creado_en', sa.DateTime(), nullable=False)
-    )
+            sa.Column('creado_en', sa.DateTime(), nullable=False)
+        )
 
     # Alertas
-    op.create_table(
-        'alertas',
+    if 'alertas' not in existing_tables:
+        op.create_table(
+            'alertas',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column('usuario_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('usuarios.id'), nullable=False, index=True),
         sa.Column('prestacion_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('prestaciones.id'), nullable=False),
@@ -118,12 +133,13 @@ def upgrade() -> None:
         sa.Column('fecha_objetivo', sa.Date(), nullable=False),
         sa.Column('resuelta', sa.Boolean(), default=False, nullable=False, index=True),
         sa.Column('creado_en', sa.DateTime(), nullable=False),
-        sa.Column('resuelta_en', sa.DateTime(), nullable=True)
-    )
+            sa.Column('resuelta_en', sa.DateTime(), nullable=True)
+        )
 
     # Horarios Profesionales
-    op.create_table(
-        'horarios_profesionales',
+    if 'horarios_profesionales' not in existing_tables:
+        op.create_table(
+            'horarios_profesionales',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column('profesional_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('profesionales.id'), nullable=False, index=True),
         sa.Column('dia_semana', sa.Integer(), nullable=False),
@@ -134,12 +150,13 @@ def upgrade() -> None:
         sa.Column('creado_en', sa.DateTime(), nullable=False),
         sa.Column('actualizado_en', sa.DateTime(), nullable=False),
         sa.CheckConstraint('dia_semana BETWEEN 0 AND 6', name='check_dia_semana'),
-        sa.UniqueConstraint('profesional_id', 'dia_semana', name='uq_profesional_dia')
-    )
+            sa.UniqueConstraint('profesional_id', 'dia_semana', name='uq_profesional_dia')
+        )
 
     # Bloqueos
-    op.create_table(
-        'bloqueos',
+    if 'bloqueos' not in existing_tables:
+        op.create_table(
+            'bloqueos',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column('scope', sa.Enum('BOX', 'PROFESIONAL', name='scopebloqueo'), nullable=False),
         sa.Column('box_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('boxes.id'), nullable=True),
@@ -148,19 +165,20 @@ def upgrade() -> None:
         sa.Column('fin', sa.DateTime(), nullable=False),
         sa.Column('motivo', sa.Text(), nullable=False),
         sa.Column('creado_en', sa.DateTime(), nullable=False),
-        sa.Column('creado_por', postgresql.UUID(as_uuid=True), sa.ForeignKey('usuarios_sistema.id'), nullable=False)
-    )
+            sa.Column('creado_por', postgresql.UUID(as_uuid=True), sa.ForeignKey('usuarios_sistema.id'), nullable=False)
+        )
 
     # Auditoría Eventos
-    op.create_table(
-        'auditoria_eventos',
+    if 'auditoria_eventos' not in existing_tables:
+        op.create_table(
+            'auditoria_eventos',
         sa.Column('id', postgresql.UUID(as_uuid=True), primary_key=True),
         sa.Column('usuario_id', postgresql.UUID(as_uuid=True), sa.ForeignKey('usuarios_sistema.id'), nullable=False, index=True),
         sa.Column('evento', sa.String(100), nullable=False, index=True),
         sa.Column('detalles', sa.JSON(), nullable=True),
         sa.Column('timestamp', sa.DateTime(), nullable=False, index=True),
-        sa.Column('ip_origen', sa.String(45), nullable=True)
-    )
+            sa.Column('ip_origen', sa.String(45), nullable=True)
+        )
 
 
 def downgrade() -> None:

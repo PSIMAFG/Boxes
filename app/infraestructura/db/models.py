@@ -90,9 +90,19 @@ class BoxModel(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     nombre = Column(String(100), nullable=False)
     ubicacion = Column(String(255), nullable=False)
+    piso = Column(Integer, nullable=True)  # Piso 1 o 2
+    capacidad = Column(Integer, default=1, nullable=False)
+    equipamiento = Column(Text, nullable=True)  # JSON string
+    caracteristicas = Column(Text, nullable=True)  # JSON string
     activo = Column(Boolean, default=True, nullable=False)
     creado_en = Column(DateTime, default=datetime.utcnow, nullable=False)
     actualizado_en = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+
+    # Constraints
+    __table_args__ = (
+        CheckConstraint('piso IS NULL OR piso IN (1, 2)', name='check_piso'),
+        CheckConstraint('capacidad >= 1', name='check_capacidad'),
+    )
 
 
 class PrestacionModel(Base):

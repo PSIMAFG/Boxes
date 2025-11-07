@@ -97,28 +97,53 @@ def seed():
             id=uuid4(),
             nombre="Box 1",
             ubicacion="Piso 1, Ala Norte",
+            piso=1,
+            capacidad=2,
+            equipamiento='{"camilla": true, "escritorio": true, "silla": true}',
+            caracteristicas='{"accesible": true, "ventana": true}',
             activo=True
         )
         box1 = box_repo.crear(box1)
-        print(f"✓ Box creado: {box1.nombre}")
+        print(f"✓ Box creado: {box1.nombre} (Piso {box1.piso})")
 
         box2 = Box(
             id=uuid4(),
             nombre="Box 2",
             ubicacion="Piso 1, Ala Sur",
+            piso=1,
+            capacidad=1,
+            equipamiento='{"camilla": true, "escritorio": true}',
+            caracteristicas='{"accesible": false, "ventana": false}',
             activo=True
         )
         box2 = box_repo.crear(box2)
-        print(f"✓ Box creado: {box2.nombre}")
+        print(f"✓ Box creado: {box2.nombre} (Piso {box2.piso})")
 
         box3 = Box(
             id=uuid4(),
             nombre="Box 3",
             ubicacion="Piso 2, Ala Norte",
+            piso=2,
+            capacidad=1,
+            equipamiento='{"camilla": true, "escritorio": true, "silla": true, "equipos_especiales": true}',
+            caracteristicas='{"accesible": true, "ventana": true, "silencioso": true}',
             activo=True
         )
         box3 = box_repo.crear(box3)
-        print(f"✓ Box creado: {box3.nombre}")
+        print(f"✓ Box creado: {box3.nombre} (Piso {box3.piso})")
+
+        box4 = Box(
+            id=uuid4(),
+            nombre="Box 4",
+            ubicacion="Piso 2, Ala Sur",
+            piso=2,
+            capacidad=2,
+            equipamiento='{"camilla": true, "escritorio": true, "silla": true}',
+            caracteristicas='{"accesible": false, "ventana": true}',
+            activo=True
+        )
+        box4 = box_repo.crear(box4)
+        print(f"✓ Box creado: {box4.nombre} (Piso {box4.piso})")
 
         # === PRESTACIONES ===
         print("\nCreando prestaciones...")
@@ -172,7 +197,7 @@ def seed():
 
         user2 = Usuario(
             id=uuid4(),
-            rut=RUT("98765432-1"),
+            rut=RUT("13456789-9"),
             nombre="Ana Martínez",
             fecha_nacimiento=date(1995, 8, 22),
             nivel_apoyo=2,
